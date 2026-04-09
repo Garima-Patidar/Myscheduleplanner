@@ -1,0 +1,174 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="page-header analytics-hero">
+    <div>
+        <p class="eyebrow">Analytics</p>
+        <h2>Subject Progress Analytics</h2>
+        <p class="muted">Track subject-wise completion, pending load, and study performance in one place.</p>
+    </div>
+    <div class="analytics-downloads">
+        <a href="{{ url_for('download_report') }}" class="ghost-link">Excel / CSV</a>
+        <a href="{{ url_for('view_report') }}" class="primary-btn">Readable Report</a>
+    </div>
+</section>
+
+<section class="analytics-summary-grid">
+    <div class="analytics-summary-card purple">
+        <span>Total Topics</span>
+        <h3>{{ total_topics }}</h3>
+    </div>
+    <div class="analytics-summary-card green">
+        <span>Completed</span>
+        <h3>{{ total_done }}</h3>
+    </div>
+    <div class="analytics-summary-card orange">
+        <span>Pending</span>
+        <h3>{{ total_pending }}</h3>
+    </div>
+    <div class="analytics-summary-card blue">
+        <span>Overall Progress</span>
+        <h3>{{ overall }}%</h3>
+    </div>
+</section>
+
+<section class="analytics-grid">
+    <div class="panel-card analytics-main-card">
+        <div class="section-head">
+            <h3>Overall Completion</h3>
+            <span class="pill">{{ overall }}%</span>
+        </div>
+
+        <div class="analytics-chart-wrap">
+            <div class="donut-chart" style="--progress: {{ overall }};">
+                <div class="donut-center">
+                    <strong>{{ overall }}%</strong>
+                    <span>Completed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-stats-line">
+            <span><strong>{{ total_done }}</strong> completed</span>
+            <span><strong>{{ total_pending }}</strong> pending</span>
+            <span><strong>{{ total_topics }}</strong> total topics</span>
+        </div>
+    </div>
+
+    <div class="panel-card analytics-insights-card">
+        <div class="section-head">
+            <h3>Quick Insights</h3>
+            <span class="pill">Smart View</span>
+        </div>
+
+        <div class="insight-box success-box">
+            <h4>Best Performing Subject</h4>
+            <p>
+                {% if best_subject %} {{ best_subject.name }} — {{ best_subject.percent }}% completed {% else %} No subject data available {% endif %}
+            </p>
+        </div>
+
+        <div class="insight-box warning-box">
+            <h4>Needs More Focus</h4>
+            <p>
+                {% if risk_subject %} {{ risk_subject.name }} — {{ risk_subject.pending }} topic(s) pending {% else %} No pending topics {% endif %}
+            </p>
+        </div>
+
+        <div class="insight-box info-box">
+            <h4>Study Suggestion</h4>
+            <p>Focus first on subjects with low completion and high pending topics so deadline pressure kam ho.</p>
+        </div>
+    </div>
+</section>
+
+<section class="panel-card analytics-visual-card">
+    <div class="section-head">
+        <h3>Visual Progress Board</h3>
+        <span class="pill">Interactive</span>
+    </div>
+
+    <div class="subject-visual-stack">
+        {% for s in data %}
+        <div class="subject-visual-row">
+            <div class="subject-visual-top">
+                <div>
+                    <h4>{{ s.name }}</h4>
+                    <p>{{ s.done }}/{{ s.total }} topics completed · Deadline {{ s.deadline }}</p>
+                </div>
+                <div class="subject-visual-right">
+                    <span class="analytics-risk-badge {{ s.risk_class }}">{{ s.risk_status }}</span>
+                    <span class="pill dark">{{ s.percent }}%</span>
+                </div>
+            </div>
+
+            <div class="progress-track analytics-progress-track">
+                <div class="progress-fill" style="width: {{ s.percent }}%;"></div>
+            </div>
+
+            <div class="subject-visual-footer">
+                <span>{{ s.pending }} pending topic(s)</span>
+                <a href="{{ url_for('download_subject_log', subject_id=s.id) }}" class="mini-link">Download Topic Log</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel-card analytics-table-card">
+    <div class="section-head">
+        <h3>Subject-wise Progress</h3>
+        <span class="pill">Detailed View</span>
+    </div>
+
+    {% if data %}
+    <div class="analytics-table-wrap">
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Total</th>
+                    <th>Done</th>
+                    <th>Pending</th>
+                    <th>Risk</th>
+                    <th>Progress</th>
+                    <th>Visual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in data %}
+                <tr>
+                    <td class="subject-name-cell">{{ s.name }}</td>
+                    <td>{{ s.total }}</td>
+                    <td>{{ s.done }}</td>
+                    <td>{{ s.pending }}</td>
+                    <td>
+                        <span class="analytics-risk-badge {{ s.risk_class }}">{{ s.risk_status }}</span>
+                    </td>
+                    <td>
+                        <span class="analytics-percent-badge
+                            {% if s.percent >= 75 %}high
+                            {% elif s.percent >= 40 %}mid
+                            {% else %}low
+                            {% endif %}">
+                            {{ s.percent }}%
+                        </span>
+                    </td>
+                    <td>
+                        <div class="mini-progress">
+                            <div class="mini-progress-fill" style="width: {{ s.percent }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state compact">
+        <h4>No analytics available</h4>
+        <p>Add subjects and topics to view analytics.</p>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

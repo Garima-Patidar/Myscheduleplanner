@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="page-header subjects-hero">
+    <div>
+        <p class="eyebrow">Subjects</p>
+        <h2>My Subjects</h2>
+        <p class="muted">{{ total_subjects }} subject(s) added. Track progress, deadlines, and study readiness.</p>
+    </div>
+    <a href="{{ url_for('add_subject') }}" class="primary-btn">Add Subject</a>
+</section>
+
+{% if subjects %}
+<section class="subjects-grid-premium">
+    {% for s in subjects %}
+    <article class="subject-card-premium">
+        <div class="subject-card-top">
+            <div>
+                <a href="{{ url_for('subject', subject_id=s.id) }}" class="subject-card-link">
+                    <div class="subject-card">
+                        <h3>{{ s.name }}</h3>
+
+                    </div>
+                </a>
+                <div class="subject-meta-row">
+                    <span class="badge {{ s.difficulty|lower }}">{{ s.difficulty }}</span>
+                    <span class="pill">{{ s.days_left }} day(s) left</span>
+                    <span class="pill dark">Deadline {{ s.deadline }}</span>
+                </div>
+            </div>
+
+            <div class="subject-card-actions">
+
+                <form action="{{ url_for('delete_subject', subject_id=s.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this subject?');">
+                    <button type="submit" class="danger-btn">Delete</button>
+                </form>
+                <a href="{{ url_for('edit_subject', subject_id=s.id) }}" class="ghost-link">Edit</a>
+            </div>
+        </div>
+
+        <div class="subject-progress-head">
+            <span>{{ s.done }}/{{ s.total }} topics done</span>
+            <strong>{{ s.percent }}%</strong>
+        </div>
+
+        <div class="progress-track large">
+            <div class="progress-fill" style="width: {{ s.percent }}%;"></div>
+        </div>
+
+        <div class="subject-footer-mini">
+            <span>{% if s.percent >= 75 %}Revision Ready{% elif s.percent >= 40 %}In Progress{% else %}Needs Focus{% endif %}</span>
+            <a href="{{ url_for('generate_timetable') }}" class="mini-link">Refresh Plan</a>
+        </div>
+    </article>
+    {% endfor %}
+</section>
+{% else %}
+<section class="panel-card">
+    <div class="empty-state">
+        <h3>No subjects added yet</h3>
+        <p>Add your first subject and upload syllabus to generate a smart timetable.</p>
+        <a href="{{ url_for('add_subject') }}" class="primary-btn">Add Subject</a>
+    </div>
+</section>
+{% endif %} {% endblock %}

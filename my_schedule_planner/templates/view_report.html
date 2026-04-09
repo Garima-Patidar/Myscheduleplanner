@@ -1,0 +1,110 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="page-header report-hero">
+    <div>
+        <p class="eyebrow">Study Report</p>
+        <h2>Readable Progress Report</h2>
+        <p class="muted">View, print, or save your academic progress report in a clean format.</p>
+    </div>
+
+    <div class="report-actions">
+        <a href="{{ url_for('download_report') }}" class="ghost-link">Excel / CSV</a>
+        <button onclick="window.print()" class="primary-btn">Print / Save PDF</button>
+    </div>
+</section>
+
+<section class="report-meta-grid">
+    <div class="panel-card">
+        <h3>Student</h3>
+        <p>{{ student_name }}</p>
+    </div>
+    <div class="panel-card">
+        <h3>Generated On</h3>
+        <p>{{ generated_on }}</p>
+    </div>
+    <div class="panel-card">
+        <h3>Overall Progress</h3>
+        <p>{{ overall }}%</p>
+    </div>
+</section>
+
+<section class="analytics-summary-grid">
+    <div class="analytics-summary-card purple">
+        <span>Total Topics</span>
+        <h3>{{ total_topics }}</h3>
+    </div>
+    <div class="analytics-summary-card green">
+        <span>Completed</span>
+        <h3>{{ total_done }}</h3>
+    </div>
+    <div class="analytics-summary-card orange">
+        <span>Pending</span>
+        <h3>{{ total_pending }}</h3>
+    </div>
+    <div class="analytics-summary-card blue">
+        <span>Overall Progress</span>
+        <h3>{{ overall }}%</h3>
+    </div>
+</section>
+
+<section class="panel-card report-progress-card">
+    <div class="section-head">
+        <h3>Overall Completion</h3>
+        <span class="pill">{{ overall }}%</span>
+    </div>
+
+    <div class="progress-track large">
+        <div class="progress-fill" style="width: {{ overall }}%;"></div>
+    </div>
+</section>
+
+{% for s in report_data %}
+<section class="panel-card report-subject-card">
+    <div class="report-subject-top">
+        <div>
+            <h3>{{ s.name }}</h3>
+            <p class="muted">
+                Difficulty: {{ s.difficulty }} · Deadline: {{ s.deadline }}
+            </p>
+        </div>
+        <div class="report-subject-right">
+            <span class="pill dark">{{ s.percent }}%</span>
+        </div>
+    </div>
+
+    <div class="report-mini-stats">
+        <span><strong>{{ s.total }}</strong> total</span>
+        <span><strong>{{ s.done }}</strong> completed</span>
+        <span><strong>{{ s.pending }}</strong> pending</span>
+    </div>
+
+    <div class="progress-track">
+        <div class="progress-fill" style="width: {{ s.percent }}%;"></div>
+    </div>
+
+    <div class="report-topic-table-wrap">
+        <table class="analytics-table report-table">
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Status</th>
+                    <th>Scheduled Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in s.topics %}
+                <tr>
+                    <td>{{ t.topic_name }}</td>
+                    <td>
+                        {% if t.status == 'done' %}
+                        <span class="analytics-risk-badge track">Completed</span> {% else %}
+                        <span class="analytics-risk-badge moderate">Pending</span> {% endif %}
+                    </td>
+                    <td>{{ t.scheduled_date or 'Not Scheduled' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endfor %} {% endblock %}

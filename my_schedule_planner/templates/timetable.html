@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Timetable</p>
+        <h2>Personalized Study Schedule</h2>
+        <p class="muted">Skip a task and it will move to the next day. Complete a task to remove it from the schedule.</p>
+    </div>
+    <a href="{{ url_for('generate_timetable') }}" class="primary-btn">Generate Timetable</a>
+</section>
+
+{% if grouped_timetable %}
+    <section class="timetable-stack">
+        {% for schedule_date, tasks in grouped_timetable.items() %}
+            <div class="panel-card">
+                <div class="section-head">
+                    <h3>{{ schedule_date }}</h3>
+                    {% if schedule_date == today %}
+                        <span class="pill">Today</span>
+                    {% endif %}
+                </div>
+
+                <div class="task-list">
+                    {% for task in tasks %}
+                        <div class="task-item {% if task.status == 'done' %}done-row{% endif %}">
+                            <div class="task-main">
+                                <div class="task-title-row">
+                                    <h4>{{ task.topic_name }}</h4>
+                                    <span class="badge {{ task.difficulty|lower }}">{{ task.difficulty }}</span>
+                                </div>
+                                <p>{{ task.subject_name }} · Deadline {{ task.deadline }}</p>
+                            </div>
+                            <div class="task-actions">
+                                {% if task.status != 'done' %}
+                                    <form action="{{ url_for('skip_task', topic_id=task.topic_id) }}" method="POST">
+                                        <button type="submit" class="ghost-btn">Skip</button>
+                                    </form>
+                                    <form action="{{ url_for('mark_done', topic_id=task.topic_id) }}" method="POST">
+                                        <button type="submit" class="primary-btn small-btn">Done</button>
+                                    </form>
+                                {% else %}
+                                    <span class="pill success-pill">Completed</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+{% else %}
+    <section class="empty-state">
+        <h3>No timetable generated yet</h3>
+        <p>Add subjects and click Generate Timetable to get your personalized schedule.</p>
+        <a href="{{ url_for('generate_timetable') }}" class="primary-btn">Generate Now</a>
+    </section>
+{% endif %}
+{% endblock %}

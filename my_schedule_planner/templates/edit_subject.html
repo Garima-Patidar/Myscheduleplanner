@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Edit Subject</p>
+        <h2>Update subject details</h2>
+    </div>
+</section>
+
+<section class="panel-card form-card">
+    <form method="POST" class="app-form">
+        <div class="field-grid">
+            <div>
+                <label>Subject Name</label>
+                <input type="text" name="name" value="{{ subject['name'] }}" required>
+            </div>
+            <div>
+                <label>Deadline</label>
+                <input type="date" name="deadline" value="{{ subject['deadline'] }}" required>
+            </div>
+        </div>
+
+        <div>
+            <label>Difficulty</label>
+            <select name="difficulty">
+                <option {% if subject['difficulty']=='Easy' %}selected{% endif %}>Easy</option>
+                <option {% if subject['difficulty']=='Medium' %}selected{% endif %}>Medium</option>
+                <option {% if subject['difficulty']=='Hard' %}selected{% endif %}>Hard</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('subjects') }}" class="ghost-link">Back</a>
+            <button type="submit" class="primary-btn">Update Subject</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

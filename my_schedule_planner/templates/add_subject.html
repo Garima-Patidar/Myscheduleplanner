@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">New Subject</p>
+        <h2>Add a subject</h2>
+        <p class="muted">Upload full syllabus file and let the system extract topics smartly. Manual topics are optional fallback.</p>
+    </div>
+</section>
+
+<section class="panel-card form-card">
+    <form method="POST" class="app-form" enctype="multipart/form-data">
+        <div class="field-grid">
+            <div>
+                <label>Subject Name</label>
+                <input type="text" name="name" placeholder="Cloud Computing" required>
+            </div>
+            <div>
+                <label>Deadline</label>
+                <input type="date" name="deadline" required>
+            </div>
+        </div>
+
+        <div>
+            <label>Difficulty</label>
+            <select name="difficulty">
+                <option>Easy</option>
+                <option selected>Medium</option>
+                <option>Hard</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Upload Syllabus File</label>
+            <input type="file" name="syllabus_file" accept=".txt,.docx,.pdf">
+            <p class="helper-text">Upload TXT, DOCX, or PDF syllabus file. The system will scan and extract topics automatically.</p>
+        </div>
+
+        <div>
+            <label>Manual Topics (Optional Fallback)</label>
+            <textarea name="topics" rows="6" placeholder="Use this only if file upload is not available. Example: Unit 1, Unit 2, Scheduling, Deadlock"></textarea>
+            <p class="helper-text">You can leave this empty if you upload a syllabus file.</p>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('subjects') }}" class="ghost-link">Cancel</a>
+            <button type="submit" class="primary-btn">Save Subject</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

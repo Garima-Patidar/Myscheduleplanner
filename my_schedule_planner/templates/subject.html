@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="page-header subject-hero">
+    <div>
+        <p class="eyebrow">Subject Details</p>
+        <h2>{{ subject.name }}</h2>
+        <p class="muted">Deadline {{ subject.deadline }} · {{ done_count }}/{{ total_topics }} topics completed</p>
+    </div>
+    <a href="{{ url_for('generate_timetable') }}" class="primary-btn">Refresh Timetable</a>
+
+</section>
+
+<section class="grid-two">
+    <div class="panel-card">
+        <div class="section-head">
+            <h3>Progress</h3>
+            <span class="badge {{ subject.difficulty|lower }}">{{ subject.difficulty }}</span>
+        </div>
+        <div class="progress-track large">
+            <div class="progress-fill" style="width: {{ percent }}%;"></div>
+        </div>
+        <p class="muted small">{{ percent }}% syllabus completed for this subject.</p>
+    </div>
+
+    <div class="panel-card">
+        <div class="section-head">
+            <h3>Study Tip</h3>
+            <span class="pill">Focus</span>
+        </div>
+        <p>Topics are grouped unit-wise so you can study in order. Complete one unit block at a time instead of scanning the full syllabus.</p>
+    </div>
+</section>
+
+<section class="panel-card">
+    <div class="section-head">
+        <h3>Units & Topics</h3>
+        <span class="pill">{{ total_topics }} total</span>
+    </div>
+
+    {% if grouped_topics %}
+    <div class="unit-stack">
+        {% for unit_name, unit_topics in grouped_topics.items() %}
+        <details class="unit-card" {% if loop.first %}open{% endif %}>
+            <summary class="unit-summary">
+                <div>
+                    <h4>{{ unit_name }}</h4>
+                    <p>{{ unit_topics|length }} topic(s)</p>
+                </div>
+                <span class="pill dark">
+                        {{ unit_topics | selectattr('status', 'equalto', 'done') | list | length }}/{{ unit_topics|length }} done
+                    </span>
+            </summary>
+
+            <div class="unit-topic-list">
+                {% for t in unit_topics %}
+                <div class="topic-row {% if t.status == 'done' %}done-row{% endif %}">
+                    <div>
+                        <h5>{{ t.topic_name }}</h5>
+                        <p>
+                            Status: <strong>{{ t.status|title }}</strong> {% if t.scheduled_date %} · Scheduled {{ t.scheduled_date }}{% endif %}
+                        </p>
+                    </div>
+
+                    <div class="topic-actions">
+                        <a href="{{ url_for('generate_notes', topic_id=t.id) }}" class="ghost-link">Generate Notes</a> {% if t.status != 'done' %}
+                        <form action="{{ url_for('mark_done', topic_id=t.id) }}" method="POST">
+                            <button type="submit" class="primary-btn small-btn">Mark Done</button>
+                        </form>
+                        {% else %}
+                        <span class="pill success-pill">Completed</span> {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state compact">
+        <h4>No topics found</h4>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

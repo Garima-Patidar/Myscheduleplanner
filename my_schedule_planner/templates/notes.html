@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="notes-page">
+    <div class="notes-topbar">
+        <div>
+            <p class="eyebrow">Topic Notes</p>
+            <h2>{{ topic }}</h2>
+            <p class="muted">
+                Subject: {{ subject_name }} · AI-generated study notes for learning and revision.
+            </p>
+        </div>
+
+        <div class="notes-top-actions">
+            <a href="{{ url_for('study_chat') }}" class="ghost-btn">Open AI Chat</a>
+            <button onclick="window.print()" class="primary-btn">Print Notes</button>
+        </div>
+    </div>
+
+    <div class="notes-shell">
+        <div class="notes-header-card">
+            <div class="notes-header-left">
+                <div class="notes-icon">🧠</div>
+                <div>
+                    <h3>Smart Study Notes</h3>
+                    <p>Structured explanation, key points, examples, and exam-ready content.</p>
+                </div>
+            </div>
+
+            <div class="notes-header-badges">
+                <span class="pill">{{ subject_name }}</span>
+                <span class="pill dark">Topic View</span>
+            </div>
+        </div>
+
+        <div class="notes-content-card">
+            <div class="notes-content">
+                {{ notes | safe }}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

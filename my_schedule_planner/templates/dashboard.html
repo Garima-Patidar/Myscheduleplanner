@@ -1,0 +1,115 @@
+{% extends "base.html" %} {% block content %}
+<section class="page-header hero-panel">
+    <div>
+        <p class="eyebrow">Dashboard</p>
+        <h2>Welcome, {{ user_name }} 👋</h2>
+        <p class="muted">Track today's workload, syllabus completion, and upcoming deadlines in one place.</p>
+    </div>
+    <a href="{{ url_for('generate_timetable') }}" class="primary-btn">Generate Timetable</a>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <span>📚Total Subjects</span>
+        <h3>{{ total_subjects }}</h3>
+    </div>
+    <div class="stat-card">
+        <span>⚠Total Topics</span>
+        <h3>{{ total_tasks }}</h3>
+    </div>
+    <div class="stat-card">
+        <span>✅Completed</span>
+        <h3>{{ completed }}</h3>
+    </div>
+    <div class="stat-card">
+        <span>⏳Pending</span>
+        <h3>{{ pending }}</h3>
+    </div>
+</section>
+
+<section class="grid-two">
+    <div class="panel-card">
+        <div class="section-head">
+            <h3>Overall Progress</h3>
+            <strong>{{ percent }}%</strong>
+        </div>
+        <div class="progress-track large">
+            <div class="progress-fill" style="width: {{ percent }}%;"></div>
+        </div>
+        <p class="muted small">{{ completed }} of {{ total_tasks }} topics completed so far.</p>
+    </div>
+
+    <div class="panel-card reminder-panel">
+        <div class="section-head">
+            <h3>⚠️Study Reminder</h3>
+            <span class="pill">{{ today }}</span>
+        </div>
+        <p>You have <strong>{{ today_pending }}</strong> pending task(s) scheduled for today. Finish them on time so they don't shift to the next days.</p>
+    </div>
+</section>
+
+<section class="grid-two stretch-top">
+    <div class="panel-card">
+        <div class="section-head">
+            <h3>Today's Tasks</h3>
+            <span class="pill">Focus List</span>
+        </div>
+
+        {% if today_tasks %}
+        <div class="task-list">
+            {% for task in today_tasks %}
+            <div class="task-item">
+                <div class="task-main">
+                    <div class="task-title-row">
+                        <h4>{{ task.topic_name }}</h4>
+                        <span class="badge {{ task.difficulty|lower }}">{{ task.difficulty }}</span>
+                    </div>
+                    <p>{{ task.subject_name }} · Deadline {{ task.deadline }}</p>
+                </div>
+                <div class="task-actions">
+                    <form action="{{ url_for('skip_task', topic_id=task.id) }}" method="POST">
+                        <button type="submit" class="ghost-btn">Skip</button>
+                    </form>
+                    <form action="{{ url_for('mark_done', topic_id=task.id) }}" method="POST">
+                        <button type="submit" class="primary-btn small-btn">Done</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state compact">
+            <h4>No tasks for today</h4>
+            <p>Your schedule looks clear. Generate a timetable or add more subjects.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="panel-card">
+        <div class="section-head">
+            <h3>Upcoming Deadlines</h3>
+            <span class="pill">Priority</span>
+        </div>
+
+        {% if upcoming_deadlines %}
+        <div class="deadline-list">
+            {% for item in upcoming_deadlines %}
+            <div class="deadline-row">
+                <div>
+                    <strong>{{ item.name }}</strong>
+                    <p>{{ item.pending_topics }} pending topic(s)</p>
+                </div>
+                <span class="pill dark">{{ item.deadline }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state compact">
+            <h4>No deadlines yet</h4>
+            <p>Add your subjects to start planning.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

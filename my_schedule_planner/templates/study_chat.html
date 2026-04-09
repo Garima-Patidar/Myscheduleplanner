@@ -1,0 +1,82 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="chatgpt-page">
+    <div class="chatgpt-topbar">
+        <div>
+            <p class="eyebrow">AI Study Chat</p>
+            <h2>Study Assistant</h2>
+            <p class="muted">Ask doubts, get notes, examples, and revision help.</p>
+        </div>
+
+        <form action="{{ url_for('clear_study_chat') }}" method="POST">
+            <button type="submit" class="ghost-btn">Clear Chat</button>
+        </form>
+    </div>
+
+    <div class="chat-shell">
+        <div class="chat-thread">
+            {% if chat_history %} {% for msg in chat_history %} {% if msg.role == 'user' %}
+            <div class="chat-row user-row">
+                <div class="chat-bubble user-bubble">
+                    <div class="chat-meta">You</div>
+                    <div class="chat-text">{{ msg.content }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="chat-row assistant-row">
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble assistant-bubble">
+                    <div class="chat-meta">
+                        Study Assistant {% if msg.subject %}
+                        <span class="chat-subject-pill">{{ msg.subject }}</span> {% endif %}
+                    </div>
+                    <div class="chat-markdown">
+                        {{ msg.content | safe }}
+                    </div>
+                </div>
+            </div>
+            {% endif %} {% endfor %} {% else %}
+            <div class="chat-empty-state">
+                <div class="chat-empty-icon">✦</div>
+                <h3>Start a study conversation</h3>
+                <p>Ask definitions, notes, examples, exam answers, or revision questions.</p>
+
+                <div class="chat-suggestions">
+                    <button type="button" class="suggestion-chip" onclick="fillQuestion('Explain cloud computing in simple language')">Explain cloud computing</button>
+                    <button type="button" class="suggestion-chip" onclick="fillQuestion('Give me 5-mark notes on deadlock')">5-mark notes on deadlock</button>
+                    <button type="button" class="suggestion-chip" onclick="fillQuestion('Difference between SaaS, PaaS and IaaS')">Difference between SaaS, PaaS and IaaS</button>
+                    <button type="button" class="suggestion-chip" onclick="fillQuestion('Important exam questions from this subject')">Important exam questions</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="chat-input-panel">
+            <form method="POST" class="chat-form">
+                <div class="chat-form-top">
+                    <select name="subject_name" class="chat-subject-select">
+                        <option value="">General</option>
+                        {% for s in subjects %}
+                            <option value="{{ s.name }}" {% if selected_subject == s.name %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="chat-input-wrap">
+                    <textarea id="study-question" name="question" rows="3" placeholder="Ask anything... for example: Explain cloud computing in simple language with example"></textarea>
+
+                    <button type="submit" class="chat-send-btn">Ask AI</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    function fillQuestion(text) {
+        document.getElementById('study-question').value = text;
+        document.getElementById('study-question').focus();
+    }
+</script>
+
+{% endblock %}
